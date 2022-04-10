@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 
 //http://127.0.0.1:9222/json/version
-//--remote-debugging-port=9222 --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding
+//--disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding
 
 (async () => {
   
@@ -29,34 +29,6 @@ const puppeteer = require("puppeteer");
   await page.waitForSelector('th[aria-label="Price: activate to sort column ascending"]');
   await page.click('th[aria-label="Price: activate to sort column ascending"]');*/
 
-  await page.waitForSelector("#markettable > tbody > tr:nth-child(1) > td:nth-child(9)");
-
-  const prices = await page.evaluate(() => {
-    return Array.from(document.querySelectorAll("#markettable > tbody > tr:nth-child(1) > td:nth-child(9)")).map(x => x.textContent);
-  })
-
-  //really shitty way that I derived the price; can be made more efficient
-  const str = ""+prices[0];
-  let newStr = "";
-  for (let i = 0; i < str.length-1; i++){
-    if (str.substring(i,i+1) === ",") continue;
-    newStr += str.substring(i,i+1);
-  }
-
-  //adjust your target price
-  if (parseInt(newStr) < 1200) {
-    
-    await page.waitForSelector('a[class="btn btn-sm btn-light"]');
-    await page.click('a[class="btn btn-sm btn-light"]');
-    
-    await page.waitForSelector('a[class="btn btn-sm btn-danger"]');
-    await page.click('a[class="btn btn-sm btn-danger"]');
-
-    await page.waitFor(3000) //deprecated code (will still work), I added this to make sure the purchase went through, but it can be removed
-    await browser.disconnect(); //you can either disconnect from the browser (stop everything) or call "startOver()" if you want to buy multiple skins --> run until you manually stop it
-    //await browser.close();
-  }
-
   startOver();
   
   async function startOver(){
@@ -70,6 +42,7 @@ const puppeteer = require("puppeteer");
       return Array.from(document.querySelectorAll("#markettable > tbody > tr:nth-child(1) > td:nth-child(9)")).map(x => x.textContent);
     })
   
+    //really shitty way that I derived the price; can be made more efficient
     const str = ""+prices[0];
     let newStr = "";
     for (let i = 0; i < str.length-1; i++){
@@ -77,6 +50,7 @@ const puppeteer = require("puppeteer");
       newStr += str.substring(i,i+1);
     }
 
+    //adjust your target price
     if (parseInt(newStr) < 1200) {
     
       await page.waitForSelector('a[class="btn btn-sm btn-light"]');
@@ -85,8 +59,8 @@ const puppeteer = require("puppeteer");
       await page.waitForSelector('a[class="btn btn-sm btn-danger"]');
       await page.click('a[class="btn btn-sm btn-danger"]');
   
-      await page.waitFor(3000) //to clarify, this waits for 3 seconds
-      await browser.disconnect(); //I disconnect because I only want to buy one cheap skin
+      await page.waitFor(3000) //deprecated code (will still work), I added this to make sure the purchase went through, but it can be removed
+      await browser.disconnect(); //you can either disconnect from the browser (stop everything) or call "startOver()" if you want to buy multiple skins --> run until you manually stop it
       //await browser.close();
     }
  
@@ -96,4 +70,3 @@ const puppeteer = require("puppeteer");
 
   
 })(); //all of the "waitForSelectors" might not actually do anything and may need to be modifed for efficiency. It seems to work just fine for me, but there is room for improvement
-
