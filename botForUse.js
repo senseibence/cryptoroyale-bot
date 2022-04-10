@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 
 //http://127.0.0.1:9222/json/version
-//--disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding
+//--remote-debugging-port=9222 --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding
 
 (async () => {
   
