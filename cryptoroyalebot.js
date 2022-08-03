@@ -1,12 +1,23 @@
 const puppeteer = require("puppeteer");
 
-//http://127.0.0.1:9222/json/version
-//--remote-debugging-port=9222 --disable-background-timer-throttling,--disable-backgrounding-occluded-windows,--disable-renderer-backgrounding
+/*
+
+what you type into the browser to get the ending string for const "link":
+http://127.0.0.1:9222/json/version
+(for reference, watch demo video)
+
+what tags you must add via *chromium --> properties* for the bot to work:
+--remote-debugging-port=9222 --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding
+
+*/
 
 (async () => {
-
-  const link = 'ws://127.0.0.1:9222/devtools/browser/ac177396-227b-47d3-81e4-d5a82a7abbed';
-  const browser = await puppeteer.connect({
+  
+  //add what you got from above after "browser/"
+  const link = 'ws://127.0.0.1:9222/devtools/browser/ac177396-227b-47d3-81e4-d5a82a7abbed'; 
+  
+  //the following are puppeteer settings to make the bot run more efficiently
+  const browser = await puppeteer.connect({ 
     headless: true,
     defaultViewport: null,
     browserWSEndpoint: link,
@@ -14,7 +25,8 @@ const puppeteer = require("puppeteer");
 
   const page = await browser.newPage();
   
-  await page.goto("https://cryptoroyale.one/skins/?m=marketplace", {
+  //go to this url and wait until the page has loaded
+  await page.goto("https://cryptoroyale.one/skins/?m=marketplace", { 
     waitUntil: "networkidle2",
   })
 
@@ -27,25 +39,33 @@ const puppeteer = require("puppeteer");
       waitUntil: "networkidle2",
     });
 
-    /*let gitMetrics = await page.metrics();
-    console.log(gitMetrics.Timestamp);
-    console.log(gitMetrics.TaskDuration);*/ 
+    /* This is to measure the time between page reloads
     
-    await page.waitForSelector("#markettable > thead > tr > th:nth-child(4)");
+    let gitMetrics = await page.metrics();
+    console.log(gitMetrics.Timestamp);
+    console.log(gitMetrics.TaskDuration);
+    
+    */ 
+    
+    //filters the marketplace by most recently added
+    await page.waitForSelector("#markettable > thead > tr > th:nth-child(4)"); 
     await page.click("#markettable > thead > tr > th:nth-child(4)");
     await page.waitForSelector("#markettable > thead > tr > th:nth-child(4)");
     await page.click("#markettable > thead > tr > th:nth-child(4)");
 
+    //compare first entry on site to "wazza"; beginning of algorithm to check if the newest entry has changed
     await page.waitForXPath('//*[@id="markettable"]/tbody/tr[1]/td[1]/span');
     let [getFirstXPath] = await page.$x('//*[@id="markettable"]/tbody/tr[1]/td[1]/span');
     let firstName = await page.evaluate(getFirstXPath => getFirstXPath.textContent, getFirstXPath);
-    //console.log(firstSkin+" vs "+firstName);//
-
+    //console.log(firstSkin+" vs "+firstName);
+    
+    //algorithm
     if (firstSkin !== firstName){
 
       firstSkin = firstName;
-      //console.log("\n" + "First five are:");//
-
+      //console.log("\n" + "First five are:");
+      
+      //this loop checks 5 entries on the site
       for (var i = 1; i < 6; i++){ 
 
         await page.waitForXPath('//*[@id="markettable"]/tbody/tr['+i+']/td[1]/span/text()');
@@ -65,49 +85,26 @@ const puppeteer = require("puppeteer");
         //name = name.toLowerCase();
         rarity = rarity.replace(/\s/g, '');
 
-        //console.log(name+" "+price+" "+rarity);//
+        //console.log(name+" "+price+" "+rarity);
 
-        if 
+        if //this is where you can change the code to suit your needs
+          
+        //example
         (((name === "cobra") && (price <= 50000)) ||
-        ((name === "spy") && (price <= 50000)) ||
-        ((name === "fox777") && (price <= 50000)) ||
-        ((name === "moneybag") && (price <= 35000)) ||
-        ((name === "crlogo") && (price <= 35000)) ||
-        ((name === "waffle2") && (price <= 25000)) ||
-        ((rarity === "EPIC") && (price <= 3000)) ||
-        ((rarity === "RARE") && (price <= 750)) ||
-        ((rarity === "UNCOMMON") && (price <= 200)) ||
-        ((name === "potion") && (price <= 7350)) ||
-        ((name === "angel") && (price <= 7350)) ||
-        ((name === "ghost") && (price <= 6500)) || 
-        ((name === "monkey") && (price <= 6500)) || 
-        ((name === "owl") && (price <= 6500)) ||
-        ((name === "royman") && (price <= 6500)) ||
-        ((name === "citrus") && (price <= 6500)) ||
-        ((name === "shades") && (price <= 6500)) ||
-        ((name === "discoball") && (price <= 6500)) ||
-        ((name === "snowman") && (price <= 6000)) ||
-        ((name === "jackolantern") && (price <= 2000)) ||
-        ((name === "egg") && (price <= 2000)) ||
-        ((name === "peach") && (price <= 1800)) ||
-        ((name === "wheeee") && (price <= 1800)) ||
-        ((name === "cat") && (price <= 420)) ||
-        ((name === "moon") && (price <= 375)) ||
-        ((name === "casinochip") && (price <= 375)) ||
-        ((name === "panda") && (price <= 375)) ||
-        ((name === "ufo") && (price <= 350)) ||
-        ((name === "crosshair") && (price <= 105)) ||
+        ((name === "shades") && (price <= 7000)) ||
         ((name === "vase") && (price <= 105)) ||
         (price <= 75)) 
         
         {
-
+          
+          //if the above conditions are met, then the entry (skin) is purchased
           await page.waitForSelector("#markettable > tbody > tr:nth-child("+i+") > td:nth-child(2) > a");
           await page.click("#markettable > tbody > tr:nth-child("+i+") > td:nth-child(2) > a");
       
           await page.waitForSelector("#markettable > tbody > tr:nth-child("+i+") > td:nth-child(2) > a.btn.btn-sm.btn-danger");
           await page.click("#markettable > tbody > tr:nth-child("+i+") > td:nth-child(2) > a.btn.btn-sm.btn-danger");
           
+          //print what was bought and wait 3 seconds for the purchase to go through
           console.log("Bought: "+name+" "+price);
           await page.waitForTimeout(3000);
           //await browser.disconnect();
@@ -117,11 +114,11 @@ const puppeteer = require("puppeteer");
       }
 
     }
-    /*gitMetrics = await page.metrics();
-    console.log(gitMetrics.Timestamp);
-    console.log(gitMetrics.TaskDuration);*/
-
+    
+    //self-explanatory 
     startOver();
   }
 
 })();
+
+//console.logs are for you to see if the bot is correctly working
