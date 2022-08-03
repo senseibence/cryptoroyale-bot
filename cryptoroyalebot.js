@@ -6,7 +6,7 @@ what you type into the browser to get the ending string for const "link":
 http://127.0.0.1:9222/json/version
 (for reference, watch demo video)
 
-what tags you must add via *chromium --> properties* for the bot to work:
+what tags you must add via chromium --> properties for the bot to work:
 --remote-debugging-port=9222 --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding
 
 */
