@@ -13,10 +13,10 @@ what tags you must add via chromium --> properties for the bot to work:
 
 (async () => {
   
-  //add what you got from above after "browser/"
+  // add what you got from above after "browser/"
   const link = 'ws://127.0.0.1:9222/devtools/browser/ac177396-227b-47d3-81e4-d5a82a7abbed'; 
   
-  //the following are puppeteer settings to make the bot run more efficiently
+  // the following are puppeteer settings to make the bot run more efficiently
   const browser = await puppeteer.connect({ 
     headless: true,
     defaultViewport: null,
@@ -25,7 +25,7 @@ what tags you must add via chromium --> properties for the bot to work:
 
   const page = await browser.newPage();
   
-  //go to this url and wait until the page has loaded
+  // go to this url and wait until the page has loaded
   await page.goto("https://cryptoroyale.one/skins/?m=marketplace", { 
     waitUntil: "networkidle2",
   })
@@ -47,25 +47,25 @@ what tags you must add via chromium --> properties for the bot to work:
     
     */ 
     
-    //filters the marketplace by most recently added
+    // filters the marketplace by most recently added
     await page.waitForSelector("#markettable > thead > tr > th:nth-child(4)"); 
     await page.click("#markettable > thead > tr > th:nth-child(4)");
     await page.waitForSelector("#markettable > thead > tr > th:nth-child(4)");
     await page.click("#markettable > thead > tr > th:nth-child(4)");
 
-    //compare first entry on site to "wazza"; beginning of algorithm to check if the newest entry has changed
+    // compare first entry on site to "wazza"; beginning of algorithm to check if the newest entry has changed
     await page.waitForXPath('//*[@id="markettable"]/tbody/tr[1]/td[1]/span');
     let [getFirstXPath] = await page.$x('//*[@id="markettable"]/tbody/tr[1]/td[1]/span');
     let firstName = await page.evaluate(getFirstXPath => getFirstXPath.textContent, getFirstXPath);
     //console.log(firstSkin+" vs "+firstName);
     
-    //algorithm
+    // algorithm
     if (firstSkin !== firstName){
 
       firstSkin = firstName;
       //console.log("\n" + "First five are:");
       
-      //this loop checks 5 entries on the site
+      // this loop checks 5 entries on the site
       for (var i = 1; i < 6; i++){ 
 
         await page.waitForXPath('//*[@id="markettable"]/tbody/tr['+i+']/td[1]/span/text()');
@@ -87,9 +87,9 @@ what tags you must add via chromium --> properties for the bot to work:
 
         //console.log(name+" "+price+" "+rarity);
 
-        if //this is where you can change the code to suit your needs
+        if // this is where you can change the code to suit your needs
           
-        //example
+        // example
         (((name === "cobra") && (price <= 50000)) ||
         ((name === "shades") && (price <= 7000)) ||
         ((name === "vase") && (price <= 105)) ||
@@ -97,14 +97,14 @@ what tags you must add via chromium --> properties for the bot to work:
         
         {
           
-          //if the above conditions are met, then the entry (skin) is purchased
+          // if the above conditions are met, then the entry (skin) is purchased
           await page.waitForSelector("#markettable > tbody > tr:nth-child("+i+") > td:nth-child(2) > a");
           await page.click("#markettable > tbody > tr:nth-child("+i+") > td:nth-child(2) > a");
       
           await page.waitForSelector("#markettable > tbody > tr:nth-child("+i+") > td:nth-child(2) > a.btn.btn-sm.btn-danger");
           await page.click("#markettable > tbody > tr:nth-child("+i+") > td:nth-child(2) > a.btn.btn-sm.btn-danger");
           
-          //print what was bought and wait 3 seconds for the purchase to go through
+          // print what was bought and wait 3 seconds for the purchase to go through
           console.log("Bought: "+name+" "+price);
           await page.waitForTimeout(3000);
           //await browser.disconnect();
@@ -115,10 +115,10 @@ what tags you must add via chromium --> properties for the bot to work:
 
     }
     
-    //self-explanatory 
+    // self-explanatory 
     startOver();
   }
 
 })();
 
-//console.logs are for you to see if the bot is correctly working
+// console.logs are for you to see if the bot is correctly working
