@@ -1,4 +1,4 @@
-# Web scraper for *cryptoroyale.one* using puppeteer node library
+# Web Scraper for *cryptoroyale.one* Using Puppeteer Node Library
 
 [Bot Demo](https://youtu.be/pqIlA8QYa2c)
 
